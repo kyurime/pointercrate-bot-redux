@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import * as fs from "fs";
 import * as path from "path";
 import Subcommand from "./subcommand";
-import CommandGroup from "./command_group";
+import Command from "./command";
 
 const express = require('express');
 
@@ -18,9 +18,9 @@ const interaction = new DiscordInteractions({
   publicKey: process.env.PUBLIC_KEY!,
 });
 
-const COMMANDS: CommandGroup[] = [];
+const COMMANDS: Command[] = [];
 
-function add_group(group: CommandGroup) {
+function add_command(group: Command) {
   if (!(COMMANDS.includes(group))) {
     COMMANDS.push(group);
   }
@@ -28,15 +28,17 @@ function add_group(group: CommandGroup) {
 
 require("require-all")({
   dirname: __dirname + "/commands",
-  filter: /^(index)\.js$/,
+  filter: /\.js$/,
   recursive: true,
   map: (name: string, module_path: string) => {
     // this isn't even ts anymore. good job me
     if (fs.statSync(module_path).isFile()) {
       const group_object = require(path.resolve(module_path));
-      const group: CommandGroup = new group_object.default();
+      const group: Command = new group_object.default();
 
-      add_group(group);
+      if (group instanceof Command) {
+        add_command(group);
+      }
     }
   }
 });
@@ -71,21 +73,19 @@ app.post("/", async (req: Request, res: Response<InteractionResponse>) => {
       });
     case InteractionType.APPLICATION_COMMAND:
       try {
-        const command_group = COMMANDS.find((group) => group.command.name == body.data.name);
-        if (command_group) {
-          // haha yes we depend on everything being a subcommand
-          const current_command = body.data.options![0];
-
-          const subcommand = command_group.commands.find((subcommand) => subcommand.command.name == current_command.name);
-          if (subcommand && "options" in current_command) {
-            return res.json(await subcommand.run_command(current_command.options));
-          }
+        const command = COMMANDS.find((group) => group.command.name == body.data.name);
+        if (command) {
+          return res.json(await command.on_command(body));
         }
+
+        throw new Error("command not found");
       } catch (e) {
+        console.error(e);
+
         return res.json({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            content: "error processing command."
+            content: `error processing command with error \`${e}\`.`
           }
         });
       }
@@ -97,7 +97,7 @@ async function init_commands() {
     const application_command: PartialApplicationCommand = {
       name: group.command.name,
       description: group.command.description,
-      options: group.commands.map((command) => command.command),
+      options: group.command.options,
     }
 
     if (group.testing) {

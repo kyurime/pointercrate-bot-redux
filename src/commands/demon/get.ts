@@ -22,20 +22,10 @@ export default class GetDemonCommand extends Subcommand {
 		);
 	}
 
-	async run_command(data?: ApplicationCommandInteractionDataOption[]) {
+	async run_command({ id }: { id: number }) {
 		const client = shared_client();
 
-		if (!data) {
-			return { type: InteractionResponseType.ACKNOWLEDGE }
-		}
-
-		const id_option = data.find((option) => option.name == "id");
-
-		if (!id_option || !("value" in id_option)) {
-			return { type: InteractionResponseType.ACKNOWLEDGE };
-		}
-
-		const demon = await client.demons.from_id(id_option.value as number);
+		const demon = await client.demons.from_id(id);
 
 		const embed: Embed = {
 			title: `Demon ${demon.name} (#${demon.position})`,

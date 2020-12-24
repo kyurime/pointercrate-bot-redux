@@ -1,17 +1,17 @@
-import CommandGroup from "../../command_group";
+import Command from "../../command";
 import GetDemonCommand from "./get";
 
-export default abstract class DemonGroup extends CommandGroup {
+export default abstract class DemonGroup extends Command {
 	constructor() {
 		super({
 			name: "demon",
 			description: "Demon related commands."
 		},
-		[
-			new GetDemonCommand()
-		],
 		{
-			testing: true
+			subcommands: [
+				new GetDemonCommand()
+			],
+			testing: true,
 		}
 		);
 	}
