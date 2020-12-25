@@ -1,4 +1,5 @@
 import { Interaction, ApplicationCommandOptionValue, ApplicationCommandInteractionDataOption, ApplicationCommandOption, InteractionResponse, ApplicationCommandOptionType } from "slash-commands";
+import { CommandError } from "./error";
 
 export interface SubcommandRunnable {
 	command: Subcommand;
@@ -7,7 +8,6 @@ export interface SubcommandRunnable {
 
 export default abstract class Subcommand {
 	command: ApplicationCommandOption;
-	interaction?: Interaction;
 
 	// while we can't nest them more than once right now, they're the same type anyways
 	subcommands?: Subcommand[];
@@ -33,8 +33,6 @@ export default abstract class Subcommand {
 	}
 
 	async on_command(interaction: Interaction, options: ApplicationCommandInteractionDataOption[]): Promise<InteractionResponse> {
-		this.interaction = interaction;
-
 		const params: Record<string, ApplicationCommandOptionValue> = {};
 		let runnable_command: SubcommandRunnable | undefined;
 
@@ -42,7 +40,7 @@ export default abstract class Subcommand {
 			if (!("value" in data)) {
 				const linked_command = this.subcommands?.find((subcommand) => subcommand.command.name == data.name);
 				if (!linked_command) {
-					throw new Error("failed to find subcommand for subcommand");
+					throw new CommandError("failed to find subcommand for subcommand");
 				}
 
 				runnable_command = { command: linked_command, options: data.options };
@@ -56,8 +54,12 @@ export default abstract class Subcommand {
 		}
 
 		// subcommands don't need this
-		return this.run_command(params);
+		if (this.run_command) {
+			return this.run_command(interaction, params);
+		}
+
+		throw new CommandError("no action found for subcommand");
 	}
 
-	abstract run_command(interaction_data?: Record<string, ApplicationCommandOptionValue>): Promise<InteractionResponse>;
+	protected abstract run_command?(interaction: Interaction, interaction_data?: Record<string, ApplicationCommandOptionValue>): Promise<InteractionResponse>;
 }

@@ -1,10 +1,10 @@
-import { DiscordInteractions, PartialApplicationCommand, Interaction, InteractionResponse, InteractionResponseType, InteractionType, ApplicationCommandOptionType } from "slash-commands";
+import { DiscordInteractions, PartialApplicationCommand, Interaction, InteractionResponse, InteractionResponseType, InteractionType, ApplicationCommandOptionType, MessageFlags } from "slash-commands";
 import { Request, Response } from 'express';
 import bodyParser from "body-parser";
 import * as fs from "fs";
 import * as path from "path";
-import Subcommand from "./subcommand";
-import Command from "./command";
+import Subcommand from "./utils/subcommand";
+import Command from "./utils/command";
 
 const express = require('express');
 
@@ -29,7 +29,7 @@ function add_command(group: Command) {
 require("require-all")({
   dirname: __dirname + "/commands",
   filter: /\.js$/,
-  recursive: true,
+  recursive: false,
   map: (name: string, module_path: string) => {
     // this isn't even ts anymore. good job me
     if (fs.statSync(module_path).isFile()) {
@@ -85,7 +85,8 @@ app.post("/", async (req: Request, res: Response<InteractionResponse>) => {
         return res.json({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            content: `error processing command with error \`${e}\`.`
+            flags: MessageFlags.EPHEMERAL,
+            content: `error processing command with \`${e.message}\`.`
           }
         });
       }

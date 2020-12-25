@@ -1,7 +1,7 @@
-import Command from "../../command";
-import GetDemonCommand from "./get";
+import Command from "../utils/command";
+import GetDemonCommand from "./demon/get";
 
-export default abstract class DemonGroup extends Command {
+export default class DemonGroup extends Command {
 	constructor() {
 		super({
 			name: "demon",
@@ -15,4 +15,6 @@ export default abstract class DemonGroup extends Command {
 		}
 		);
 	}
+
+	protected run_command: undefined;
 }

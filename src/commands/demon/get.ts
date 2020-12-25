@@ -1,7 +1,7 @@
-import { InteractionResponseType, ApplicationCommandOptionType, ApplicationCommandInteractionDataOption, Embed } from "slash-commands";
+import { InteractionResponseType, ApplicationCommandOptionType, Interaction, Embed } from "slash-commands";
 import { shared_client } from "../../pointercrate-link";
 
-import Subcommand from "../../subcommand";
+import Subcommand from "../../utils/subcommand";
 
 export default class GetDemonCommand extends Subcommand {
 	constructor() {
@@ -22,7 +22,7 @@ export default class GetDemonCommand extends Subcommand {
 		);
 	}
 
-	async run_command({ id }: { id: number }) {
+	protected async run_command(interaction: Interaction, { id }: { id: number }) {
 		const client = shared_client();
 
 		const demon = await client.demons.from_id(id);

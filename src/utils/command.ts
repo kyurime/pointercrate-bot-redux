@@ -1,12 +1,10 @@
 import { PartialApplicationCommand, Interaction, InteractionResponse, ApplicationCommandInteractionData, ApplicationCommandOptionValue } from "slash-commands";
-import { symbolName } from "typescript";
 import Subcommand, { SubcommandRunnable } from "./subcommand";
+import { CommandError } from "./error";
 
 export default abstract class Command {
 	testing?: boolean;
 	subcommands?: Subcommand[];
-
-	interaction?: Interaction;
 
 	constructor(
 		public command: PartialApplicationCommand,
@@ -30,14 +28,12 @@ export default abstract class Command {
 	async on_command(interaction: Interaction): Promise<InteractionResponse> {
 		// wrong interaction type altogether - this should never be reached
 		if (!interaction.data) {
-			throw new Error("command called from non command event");
+			throw new CommandError("command called from non command event");
 		}
 
-		this.interaction = interaction;
-
-		// no params at all.
 		if (!interaction.data.options) {
-			return this.run_command({});
+			// we just set a default of nothing here, gonna do the same thing anyways
+			interaction.data.options = [];
 		}
 
 		const params: Record<string, ApplicationCommandOptionValue> = {};
@@ -50,7 +46,7 @@ export default abstract class Command {
 				// this means we have a subcommand on our hands
 				const linked_command = this.subcommands?.find((subcommand) => subcommand.command.name == data.name);
 				if (!linked_command) {
-					throw new Error("failed to find subcommand for command");
+					throw new CommandError("failed to find subcommand for command");
 				}
 
 				runnable_command = { command: linked_command, options: data.options };
@@ -65,8 +61,12 @@ export default abstract class Command {
 		}
 
 		// subcommands don't need this
-		return this.run_command(params);
+		if (this.run_command) {
+			return this.run_command(interaction, params);
+		}
+
+		throw new CommandError("no subcommand or action found for command");
 	}
 
-	abstract run_command(data: Record<string, ApplicationCommandOptionValue>): Promise<InteractionResponse>;
+	protected abstract run_command?(interaction: Interaction, data: Record<string, ApplicationCommandOptionValue>): Promise<InteractionResponse>;
 }
