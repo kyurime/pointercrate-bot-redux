@@ -5,7 +5,6 @@ import express, { Request, Response } from 'express';
 import bodyParser from "body-parser";
 import * as fs from "fs";
 import * as path from "path";
-import Subcommand from "./utils/subcommand";
 import Command from "./utils/command";
 import { test_db } from "./database/user";
 
@@ -108,7 +107,37 @@ async function init_commands() {
   }
 }
 
-init_commands();
+async function sync_commands() {
+  await init_commands();
+
+  // get global commands first
+  const registered_global_commands = await interaction.getApplicationCommands();
+  const global_command_names = COMMANDS.filter((command) => !command.testing).map((command) => command.command.name);
+
+  // we know that all the local commands are also registered now
+  const global_difference = registered_global_commands.filter((command) => !global_command_names.includes(command.name));
+
+  for (const command of global_difference) {
+    console.warn(`Registered global command discrepancy found - ${command.name} (${command.description})`);
+
+    // don't really care about resolving promises here
+    await interaction.deleteApplicationCommand(command.id);
+  }
+
+  const registered_test_commands = await interaction.getApplicationCommands(process.env.TEST_GUILD);
+  const test_command_names = COMMANDS.filter((command) => command.testing).map((command) => command.command.name);
+
+  const test_difference = registered_test_commands.filter((command) => !test_command_names.includes(command.name));
+
+  for (const command of test_difference) {
+    console.warn(`Registered test command discrepancy found - ${command.name} (${command.description})`);
+
+    await interaction.deleteApplicationCommand(command.id, process.env.TEST_GUILD);
+  }
+}
+
+sync_commands();
+
 test_db();
 
 app.listen(process.env.PORT ?? 80, () => { console.log("initialized") });
