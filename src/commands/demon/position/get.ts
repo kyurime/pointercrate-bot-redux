@@ -1,4 +1,5 @@
 import { InteractionResponseType, ApplicationCommandOptionType, Interaction, Embed } from "slash-commands";
+import { demon_embed } from "../../../helpers/demon";
 import { shared_client } from "../../../pointercrate-link";
 
 import Subcommand from "../../../utils/subcommand";
@@ -30,9 +31,7 @@ export default class GetDemonByPositionCommand extends Subcommand {
 
 		const demon = await client.demons.from_position(position);
 
-		const embed: Embed = {
-			title: `Demon ${demon.name} (#${demon.position})`,
-		}
+		const embed = await demon_embed(demon);
 
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
