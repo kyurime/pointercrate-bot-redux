@@ -17,6 +17,18 @@ export default class GetDemonByPositionCommand extends Subcommand {
 						name: "position",
 						description: "Position of demon",
 						required: true,
+					},
+					{
+						type: ApplicationCommandOptionType.BOOLEAN,
+						name: "records",
+						description: "Determines whether to include records or not",
+						required: false,
+					},
+					{
+						type: ApplicationCommandOptionType.BOOLEAN,
+						name: "detailed",
+						description: "Provides more ids than typical",
+						required: false,
 					}
 				]
 			},
@@ -25,18 +37,19 @@ export default class GetDemonByPositionCommand extends Subcommand {
 
 	protected async run_command(
 		interaction: Interaction,
-		{ position }: { position: number }
+		{ position, records, detailed }:
+		{ position: number, records?: boolean, detailed?: boolean }
 	) {
 		const client = shared_client();
 
 		const demon = await client.demons.from_position(position);
 
-		const embed = await demon_embed(demon);
+		const embeds = await demon_embed(demon, records ?? false, detailed ?? false);
 
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {
-				embeds: [embed],
+				embeds: embeds,
 			}
 		}
 	};

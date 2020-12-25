@@ -4,9 +4,11 @@ import { shared_client } from "../pointercrate-link";
 
 import url from "url";
 
-export async function demon_embed(demon: FullDemon) {
+export async function demon_embed(demon: FullDemon, include_records: boolean, detailed: boolean) {
 	const client = shared_client();
 	const metadata = await client.get_metadata();
+
+	const embeds: Embed[] = [];
 
 	const num_of_completions = demon.records.filter((record) => record.progress == 100).length;
 	const pc_url = new URL(client.url);
@@ -14,7 +16,7 @@ export async function demon_embed(demon: FullDemon) {
 	const embed: Embed = {
 		title: `${demon.name} (#${demon.position})`,
 		url: `${pc_url.origin}/demonlist/${demon.position}`,
-		description: get_creator_string(demon),
+		description: get_creator_string(demon, detailed),
 		fields: [
 			{
 				name: "Record Completion",
@@ -44,29 +46,53 @@ export async function demon_embed(demon: FullDemon) {
 		});
 	}
 
+	embeds.push(embed);
+
 	if (demon.creators.length > 2) {
-		embed.fields?.unshift({
-			name: "Creators",
-			value: demon.creators.map((creator) => creator.name).join(", "),
+		embeds.push({
+			title: "Creators",
+			fields: demon.creators.map((creator) => {
+				return {
+					name: `${creator.name}${detailed ? ` (${creator.id})` : ``}`,
+					value: "\u200b",
+					inline: true,
+				}
+			}),
 		});
 	}
 
-	return embed;
+	if (include_records) {
+		embeds.push({
+			title: "Records",
+			fields: demon.records.map((record) => {
+				return {
+					name: `${record.player.name} (${record.progress}%)`,
+					value: `${detailed ? `${record.id} | ` : ``}${`[Video](${record.video})` ?? "\u200b"}`,
+					inline: true,
+				}
+			}),
+		});
+	}
+
+	return embeds;
 }
 
 // port from pointercrate
-function get_creator_string(demon: FullDemon) {
-	const publisher_name = demon.publisher.name;
-	const verifier_name = demon.verifier.name;
+function get_creator_string(demon: FullDemon, detailed: boolean) {
+	const publisher_name = `${demon.publisher.name}${detailed ? ` (${demon.publisher.id})` : ""}`;
+	const verifier_name = `${demon.verifier.name}${detailed ? ` (${demon.verifier.id})` : ""}`;
 
 	let creator_string = "Unknown";
 
-	if (demon.creators.length == 1) {
-		creator_string = demon.creators[0].name;
-	} else if (demon.creators.length == 2) {
-		creator_string = `${demon.creators[0].name} and ${demon.creators[1].name}`
-	} else if (demon.creators.length > 2) {
-		creator_string = `${demon.creators[0].name} and more`
+	if (demon.creators.length >= 1) {
+		const first_creator_name = `${demon.creators[0].name}${detailed ? ` (${demon.creators[0].id})` : ""}`;
+		creator_string = first_creator_name;
+
+		if (demon.creators.length == 2) {
+			creator_string = `${first_creator_name} and ${demon.creators[1].name}${detailed ? ` (${demon.creators[1].id})` : ""}`
+		} else if (demon.creators.length > 2) {
+			creator_string = `${first_creator_name} and more`
+		}
 	}
 
 	let headline = "";
