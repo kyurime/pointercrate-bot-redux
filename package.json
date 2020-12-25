@@ -1,5 +1,5 @@
 {
-  "name": "pointercrate-bot-rewrite",
+  "name": "pointercrate-bot-redux",
   "version": "0.0.1-alpha",
   "description": "A rewrite of the original Pointercrate bot.",
   "main": "dist/index.js",
