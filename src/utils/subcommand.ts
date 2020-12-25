@@ -32,7 +32,11 @@ export default abstract class Subcommand {
 
 	}
 
-	async on_command(interaction: Interaction, options: ApplicationCommandInteractionDataOption[]): Promise<InteractionResponse> {
+	async on_command(interaction: Interaction, options?: ApplicationCommandInteractionDataOption[]): Promise<InteractionResponse> {
+		if (!options) {
+			options = [];
+		}
+
 		const params: Record<string, ApplicationCommandOptionValue> = {};
 		let runnable_command: SubcommandRunnable | undefined;
 

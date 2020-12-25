@@ -1,12 +1,14 @@
 import { ApplicationCommandOptionType, Interaction, InteractionResponseType, MessageFlags } from 'slash-commands';
-import { shared_client } from '../pointercrate-link';
-import Command from '../utils/command';
+import { create_user } from '../../database/user';
+import { shared_client } from '../../pointercrate-link';
+import Subcommand from '../../utils/subcommand';
 
-export default class LoginCommand extends Command {
+export default class UserLoginCommand extends Subcommand {
 	constructor() {
 		super({
 			name: "login",
 			description: "Logs into pointercrate with provided token.",
+			type: ApplicationCommandOptionType.SUB_COMMAND,
 			options: [
 				{
 					name: "token",
@@ -15,10 +17,7 @@ export default class LoginCommand extends Command {
 					type: ApplicationCommandOptionType.STRING,
 				}
 			]
-		},
-		{
-			testing: true
-		});
+		})
 	}
 
 	async run_command(interaction: Interaction, { token }: { token: string }) {
@@ -56,13 +55,23 @@ export default class LoginCommand extends Command {
 			};
 		}
 
-		// TODO: db code
+		try {
+			await create_user(interaction.member.user.id, token,client.user?.permissions ?? 0);
+		} catch (e) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: `DB entry failed with message \`${e.message}\`.`,
+				}
+			}
+		}
 
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE,
 			data: {
 				flags: MessageFlags.EPHEMERAL,
-				content: `Successfully logged into user ${client.user?.name}.`,
+				content: `Successfully logged into user \`${client.user?.name}\`.`,
 			}
 		}
 	}

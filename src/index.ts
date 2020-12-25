@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { DiscordInteractions, PartialApplicationCommand, Interaction, InteractionResponse, InteractionResponseType, InteractionType, ApplicationCommandOptionType, MessageFlags } from "slash-commands";
 import express, { Request, Response } from 'express';
 import bodyParser from "body-parser";
@@ -5,8 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import Subcommand from "./utils/subcommand";
 import Command from "./utils/command";
-
-require('dotenv').config()
+import { test_db } from "./database/user";
 
 const app = express();
 
@@ -108,4 +109,6 @@ async function init_commands() {
 }
 
 init_commands();
+test_db();
+
 app.listen(process.env.PORT ?? 80, () => { console.log("initialized") });
