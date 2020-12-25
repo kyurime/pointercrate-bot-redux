@@ -51,13 +51,9 @@ export async function demon_embed(demon: FullDemon, include_records: boolean, de
 	if (demon.creators.length > 2) {
 		embeds.push({
 			title: "Creators",
-			fields: demon.creators.map((creator) => {
-				return {
-					name: `${creator.name}${detailed ? ` (${creator.id})` : ``}`,
-					value: "\u200b",
-					inline: true,
-				}
-			}),
+			description: demon.creators.map((creator) => {
+				return `${creator.name}${detailed ? ` (${creator.id})` : ``}`
+			}).join(", "),
 		});
 	}
 
