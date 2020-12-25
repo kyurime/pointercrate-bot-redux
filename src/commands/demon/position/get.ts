@@ -3,18 +3,18 @@ import { shared_client } from "../../../pointercrate-link";
 
 import Subcommand from "../../../utils/subcommand";
 
-export default class GetDemonByIDCommand extends Subcommand {
+export default class GetDemonByPositionCommand extends Subcommand {
 	constructor() {
 		super(
 			{
 				name: "get",
-				description: "Get demon by id",
+				description: "Get demon by position",
 				type: ApplicationCommandOptionType.SUB_COMMAND,
 				options: [
 					{
 						type: ApplicationCommandOptionType.INTEGER,
-						name: "id",
-						description: "ID of demon",
+						name: "position",
+						description: "Position of demon",
 						required: true,
 					}
 				]
@@ -22,10 +22,13 @@ export default class GetDemonByIDCommand extends Subcommand {
 		);
 	}
 
-	protected async run_command(interaction: Interaction, { id }: { id: number }) {
+	protected async run_command(
+		interaction: Interaction,
+		{ position }: { position: number }
+	) {
 		const client = shared_client();
 
-		const demon = await client.demons.from_id(id);
+		const demon = await client.demons.from_position(position);
 
 		const embed: Embed = {
 			title: `Demon ${demon.name} (#${demon.position})`,

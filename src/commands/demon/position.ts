@@ -1,19 +1,19 @@
 import { ApplicationCommandOptionType } from "slash-commands";
 import Subcommand from "../../utils/subcommand";
-import GetDemonByIDCommand from "./id/get";
+import GetDemonByPositionCommand from "./position/get";
 
-export default class DemonByIDCommand extends Subcommand {
+export default class DemonByPositionCommand extends Subcommand {
 	constructor() {
 		super(
 			{
-				name: "id",
-				description: "Demon commands sorted by id",
+				name: "position",
+				description: "Demon commands sorted by position",
 				type: ApplicationCommandOptionType.SUB_COMMAND_GROUP
 			},
 			[
-				new GetDemonByIDCommand()
+				new GetDemonByPositionCommand()
 			],
-			)
+		)
 	}
 
 	protected run_command: undefined;
