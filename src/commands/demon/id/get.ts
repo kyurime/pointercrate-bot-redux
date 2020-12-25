@@ -1,7 +1,7 @@
 import { InteractionResponseType, ApplicationCommandOptionType, Interaction, Embed } from "slash-commands";
-import { shared_client } from "../../pointercrate-link";
+import { shared_client } from "../../../pointercrate-link";
 
-import Subcommand from "../../utils/subcommand";
+import Subcommand from "../../../utils/subcommand";
 
 export default class GetDemonCommand extends Subcommand {
 	constructor() {

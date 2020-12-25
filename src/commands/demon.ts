@@ -1,5 +1,6 @@
 import Command from "../utils/command";
-import GetDemonCommand from "./demon/get";
+import AddDemonCommand from "./demon/add";
+import DemonByIDCommand from "./demon/id";
 
 export default class DemonGroup extends Command {
 	constructor() {
@@ -9,7 +10,8 @@ export default class DemonGroup extends Command {
 		},
 		{
 			subcommands: [
-				new GetDemonCommand()
+				new DemonByIDCommand(),
+				new AddDemonCommand(),
 			],
 			testing: true,
 		}

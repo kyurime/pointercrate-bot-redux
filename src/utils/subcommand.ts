@@ -61,5 +61,5 @@ export default abstract class Subcommand {
 		throw new CommandError("no action found for subcommand");
 	}
 
-	protected abstract run_command?(interaction: Interaction, interaction_data?: Record<string, ApplicationCommandOptionValue>): Promise<InteractionResponse>;
+	protected abstract run_command?(interaction: Interaction, interaction_data?: Record<string, ApplicationCommandOptionValue | undefined>): Promise<InteractionResponse>;
 }
