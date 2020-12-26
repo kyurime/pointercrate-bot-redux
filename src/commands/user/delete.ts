@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType, Interaction, InteractionResponseType, MessageFlags } from 'slash-commands';
 import { delete_user } from '../../database/user';
-import { shared_client } from '../../pointercrate-link';
 import Subcommand from '../../utils/subcommand';
 
 export default class UserLogoutCommand extends Subcommand {
