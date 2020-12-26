@@ -14,7 +14,25 @@ export default class UserLogoutCommand extends Subcommand {
 
 	async run_command(interaction: Interaction) {
 		try {
-			await delete_user(interaction.member.user.id);
+			const count = await delete_user(interaction.member.user.id);
+
+			if (count > 0) {
+				return {
+					type: InteractionResponseType.CHANNEL_MESSAGE,
+					data: {
+						flags: MessageFlags.EPHEMERAL,
+						content: `You have been successfully logged out.`,
+					}
+				}
+			} else {
+				return {
+					type: InteractionResponseType.CHANNEL_MESSAGE,
+					data: {
+						flags: MessageFlags.EPHEMERAL,
+						content: `There was no user to log out from.`,
+					}
+				}
+			}
 		} catch (e) {
 			if ("message" in e) {
 				return {
@@ -27,14 +45,6 @@ export default class UserLogoutCommand extends Subcommand {
 			} else {
 				throw e;
 			};
-		}
-
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE,
-			data: {
-				flags: MessageFlags.EPHEMERAL,
-				content: `You have been successfully logged out.`,
-			}
 		}
 	}
 }
