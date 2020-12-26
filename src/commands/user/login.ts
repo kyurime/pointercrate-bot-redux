@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, Interaction, InteractionResponseType, MessageFlags } from 'slash-commands';
-import { create_user } from '../../database/user';
+import { create_user, get_user } from '../../database/user';
 import { shared_client } from '../../pointercrate-link';
 import Subcommand from '../../utils/subcommand';
 
@@ -22,6 +22,17 @@ export default class UserLoginCommand extends Subcommand {
 
 	async run_command(interaction: Interaction, { token }: { token: string }) {
 		const client = shared_client();
+
+		const user = await get_user(interaction.member.user.id);
+		if (user) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: `You currently logged in - please logout first!`,
+				}
+			}
+		}
 
 		// messy token validation thing
 		try {
