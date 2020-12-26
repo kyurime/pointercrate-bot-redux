@@ -41,38 +41,63 @@ export default class RecordGetSubcommand extends Subcommand {
 			client.token_login_unsafe(user.token);
 		}
 
-		const record = await client.records.from_id(id);
+		try {
+			const record = await client.records.from_id(id);
 
-		const embeds = [];
+			const embeds = [];
 
-		embeds.push({
-			title: `\
+			embeds.push({
+				title: `\
 ${record.player.name}'s${detailed ? ` (${record.player.id})` : ""} \
 ${record.progress}% record on ${record.demon.name} ${detailed ? `(${record.demon.id})` : ""}`,
-			description: `Currently ${record.status}`,
-			url: record.video,
-			footer: {
-				text: `Record ${record.id}`
-			}
-		});
-
-		if (record.notes && record.notes.length > 0) {
-			embeds.push({
-				title: "Record Notes",
-				fields: record.notes.map((note) => {
-					return {
-						name: (note.author ?? "Submitter") + (detailed ? ` (${note.id})` : ""),
-						value: note.content,
-					}
-				})
+				description: `Currently ${record.status}`,
+				url: record.video,
+				footer: {
+					text: `Record ${record.id}`
+				}
 			});
+
+			if (record.notes && record.notes.length > 0) {
+				embeds.push({
+					title: "Record Notes",
+					fields: record.notes.map((note) => {
+						return {
+							name: (note.author ?? "Submitter") + (detailed ? ` (${note.id})` : ""),
+							value: note.content,
+						}
+					})
+				});
+			}
+
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					embeds: embeds,
+				}
+			}
+		} catch (e) {
+			if ("code" in e) {
+				switch (e.code) {
+					case 40100:
+						return {
+							type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+							data: {
+								flags: MessageFlags.EPHEMERAL,
+								content: "You do not have the permissions required to get this record!"
+							}
+					}
+					case 40401:
+						return {
+							type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+							data: {
+								flags: MessageFlags.EPHEMERAL,
+								content: "No record was found by this id!"
+							}
+					}
+				}
+			}
+			throw e;
 		}
 
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				embeds: embeds,
-			}
-		}
 	};
 }
