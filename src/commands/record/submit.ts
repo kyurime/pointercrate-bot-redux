@@ -42,16 +42,31 @@ export default class RecordSubmitSubcommand extends Subcommand {
 	protected async run_command(
 		interaction: Interaction,
 		{ demon, progress, player, video }:
-		{ demon: string, progress: string, player: string, video: string }
+		{ demon: string, progress: number, player: string, video: string }
 	) {
 		const client = shared_client();
 
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				content: "This command is currently unimplemented!",
-				flags: MessageFlags.EPHEMERAL,
+		try {
+			const new_record = await client.records.submit({
+				progress, player, demon, video,
+			});
+
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					content: `Your ${new_record.progress}% record on ${new_record.demon.name} has been submitted (ID: ${new_record.id})!`,
+					flags: MessageFlags.EPHEMERAL,
+				}
+			}
+		} catch (e) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					content: `Failed to submit record with message \`${e.message}\``,
+					flags: MessageFlags.EPHEMERAL,
+				}
 			}
 		}
+
 	};
 }

@@ -42,7 +42,7 @@ export default class User extends Model {
 	/**
 	 * gets permissions with inheritance
 	 */
-	implied_permissions() {
+	get implied_permissions() {
 		const user_permissions_list = this.permissions_list;
 
 		// this is how pointercrate does it (shrug)
