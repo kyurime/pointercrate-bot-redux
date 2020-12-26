@@ -6,8 +6,8 @@ import Subcommand from '../../utils/subcommand';
 export default class UserLogoutCommand extends Subcommand {
 	constructor() {
 		super({
-			name: "logout",
-			description: "Logs out current Pointercrate user.",
+			name: "unlink",
+			description: "Unlinks from current Pointercrate user.",
 			type: ApplicationCommandOptionType.SUB_COMMAND,
 		})
 	}
@@ -21,7 +21,7 @@ export default class UserLogoutCommand extends Subcommand {
 					type: InteractionResponseType.CHANNEL_MESSAGE,
 					data: {
 						flags: MessageFlags.EPHEMERAL,
-						content: `You have been successfully logged out.`,
+						content: `You have been successfully unlinked.`,
 					}
 				}
 			} else {
@@ -29,7 +29,7 @@ export default class UserLogoutCommand extends Subcommand {
 					type: InteractionResponseType.CHANNEL_MESSAGE,
 					data: {
 						flags: MessageFlags.EPHEMERAL,
-						content: `There was no user to log out from.`,
+						content: `There was no user to unlink from.`,
 					}
 				}
 			}
@@ -39,7 +39,7 @@ export default class UserLogoutCommand extends Subcommand {
 					type: InteractionResponseType.CHANNEL_MESSAGE,
 					data: {
 						flags: MessageFlags.EPHEMERAL,
-						content: `User logout failed with message \`${e.message}\`.`,
+						content: `User unlinking failed with message \`${e.message}\`.`,
 					}
 				}
 			} else {

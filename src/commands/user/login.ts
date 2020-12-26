@@ -6,8 +6,8 @@ import Subcommand from '../../utils/subcommand';
 export default class UserLoginCommand extends Subcommand {
 	constructor() {
 		super({
-			name: "login",
-			description: "Logs into pointercrate with provided token.",
+			name: "link",
+			description: "Links to pointercrate account with provided token.",
 			type: ApplicationCommandOptionType.SUB_COMMAND,
 			options: [
 				{
@@ -29,7 +29,7 @@ export default class UserLoginCommand extends Subcommand {
 				type: InteractionResponseType.CHANNEL_MESSAGE,
 				data: {
 					flags: MessageFlags.EPHEMERAL,
-					content: `You currently logged in - please logout first!`,
+					content: `You are already linked - please unlink first!`,
 				}
 			}
 		}
@@ -58,7 +58,7 @@ export default class UserLoginCommand extends Subcommand {
 					type: InteractionResponseType.CHANNEL_MESSAGE,
 					data: {
 						flags: MessageFlags.EPHEMERAL,
-						content: `User login failed with message \`${e.message}\`.`,
+						content: `User linking failed with message \`${e.message}\`.`,
 					}
 				}
 			} else {
@@ -82,7 +82,7 @@ export default class UserLoginCommand extends Subcommand {
 			type: InteractionResponseType.CHANNEL_MESSAGE,
 			data: {
 				flags: MessageFlags.EPHEMERAL,
-				content: `Successfully logged into user \`${client.user?.name}\`.`,
+				content: `Successfully linked to user \`${client.user?.name}\`.`,
 			}
 		}
 	}
