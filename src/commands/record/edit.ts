@@ -36,7 +36,7 @@ export default class RecordEditSubcommand extends Subcommand {
 							},
 							{
 								name: "Under Consideration",
-								value: "underconsideration"
+								value: "under consideration"
 							}
 						],
 					},
