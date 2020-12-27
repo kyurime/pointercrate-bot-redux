@@ -1,4 +1,5 @@
 import { InteractionResponseType, ApplicationCommandOptionType, Interaction, Embed, MessageFlags } from "slash-commands";
+import { get_user, Permissions } from "../../database/user";
 import { shared_client } from "../../pointercrate-link";
 
 import Subcommand from "../../utils/subcommand";
@@ -28,11 +29,37 @@ export default class RecordDeleteSubcommand extends Subcommand {
 	) {
 		const client = shared_client();
 
+		const user = await get_user(interaction.member.user.id);
+		if (!user) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: "You must be linked to use this command!",
+				}
+			}
+		}
+
+		if (!user.implied_permissions.includes(Permissions.ListAdministrator)) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: "You must be list admin to use this command!",
+				}
+			}
+		}
+
+		client.token_login_unsafe(user.token);
+
+		const record = await client.records.from_id(id);
+		await record.delete();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {
 				flags: MessageFlags.EPHEMERAL,
-				content: "This endpoint is currently unimplemented!",
+				content: `Record ${record.id} by ${record.player.name} successfully deleted!`,
 			}
 		}
 	};
