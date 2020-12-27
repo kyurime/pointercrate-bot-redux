@@ -76,7 +76,7 @@ ${record.progress}% record on ${record.demon.name} ${detailed ? `(${record.demon
 				}
 			}
 		} catch (e) {
-			if ("code" in e) {
+			if (e.code) {
 				switch (e.code) {
 					case 40100:
 						return {
