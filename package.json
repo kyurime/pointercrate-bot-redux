@@ -18,7 +18,7 @@
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "pointercrate-js": "^0.0.6-alpha",
+    "pointercrate-js": "^0.0.7-alpha",
     "require-all": "^3.0.0",
     "sequelize": "^6.3.5",
     "slash-commands": "^1.2.2",
