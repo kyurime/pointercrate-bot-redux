@@ -1,6 +1,7 @@
 import Command from "../utils/command";
 import SubmitterEditSubcommand from "./submitter/edit";
 import SubmitterGetSubcommand from "./submitter/get";
+import SubmitterListSubcommand from "./submitter/list";
 
 export default class SubmitterGroup extends Command {
 	constructor() {
@@ -12,6 +13,7 @@ export default class SubmitterGroup extends Command {
 				subcommands: [
 					new SubmitterEditSubcommand(),
 					new SubmitterGetSubcommand(),
+					new SubmitterListSubcommand(),
 				],
 				testing: true,
 			}
