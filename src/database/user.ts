@@ -22,23 +22,6 @@ export default class User extends Model {
 		return permissions_list;
 	}
 
-	get_permissions_list() {
-		const permissions_list: Permissions[] = [];
-
-		for (const permission in Permissions) {
-			// returns both the values we want and the names of each key
-			if (isNaN(Number(permission))) {
-				continue;
-			}
-
-			if ((this.permissions & Number(permission)) == Number(permission)) {
-				permissions_list.push(Number(permission));
-			}
-		}
-
-		return permissions_list;
-	}
-
 	/**
 	 * gets permissions with inheritance
 	 */
