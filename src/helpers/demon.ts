@@ -3,6 +3,7 @@ import { Embed } from "slash-commands";
 import { shared_client } from "../pointercrate-link";
 
 import url from "url";
+import Demon from "pointercrate-js/build/main/lib/endpoints/demon/demon";
 
 export async function demon_embed(demon: FullDemon, include_records: boolean, detailed: boolean) {
 	const client = shared_client();
@@ -71,6 +72,23 @@ export async function demon_embed(demon: FullDemon, include_records: boolean, de
 	}
 
 	return embeds;
+}
+
+export function listed_demon_embed(demon: Demon, detailed?: boolean): Embed {
+	const client = shared_client();
+	const pc_url = new URL(client.url);
+
+	const publisher_name = `${demon.publisher.name}${detailed ? ` (${demon.publisher.id})` : ""}`;
+	const verifier_name = `${demon.verifier.name}${detailed ? ` (${demon.verifier.id})` : ""}`;
+
+	return {
+		title: `${demon.name} (#${demon.position})`,
+		url: `${pc_url.origin}/demonlist/${demon.position}`,
+		description: `verified by ${verifier_name}, published by ${publisher_name}`,
+		footer: {
+			text: `Demon ${demon.id}`
+		}
+	}
 }
 
 // port from pointercrate
