@@ -64,32 +64,36 @@ app.post("/", async (req: Request, res: Response<InteractionResponse>) => {
   // we can consider our data to be correct at this point
   const body: Interaction = req.body;
 
+  return res.json(await run_interaction(body));
+});
+
+async function run_interaction(body: Interaction) {
   switch (body.type) {
     case InteractionType.PING:
-      return res.json({
+      return {
         type: InteractionResponseType.PONG
-      });
+      };
     case InteractionType.APPLICATION_COMMAND:
       try {
         const command = COMMANDS.find((group) => group.command.name == body.data.name);
         if (command) {
-          return res.json(await command.on_command(body));
+          return await command.on_command(body);
         }
 
         throw new Error("command not found");
       } catch (e) {
         console.error(e);
 
-        return res.json({
+        return {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             flags: MessageFlags.EPHEMERAL,
             content: `error processing command with \`${e.message}\`.`
           }
-        });
+        };
       }
   }
-});
+}
 
 async function init_commands() {
   for await (const group of COMMANDS) {
