@@ -42,6 +42,8 @@ export default class UserInfoCommand extends Subcommand {
 			};
 		}
 
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE,
 			data: {

@@ -78,6 +78,8 @@ export default class UserLoginCommand extends Subcommand {
 			}
 		}
 
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE,
 			data: {
