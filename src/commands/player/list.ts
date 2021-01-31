@@ -77,7 +77,7 @@ export default class PlayerListSubcommand extends Subcommand {
 		const players = await client.players.list(pagination);
 		const player_embeds = players.map((player) => {
 			return {
-				title: `Player ${player.name} (#${player.id})${player.nationality ? ` - ${player.nationality}` : ''}`,
+				title: `Player ${player.name} (#${player.id})${player.nationality ? ` - ${player.nationality.nation}` : ''}`,
 				description: `This player is currently ${player.banned ? "" : "not "}banned`,
 			}
 		});

@@ -31,7 +31,7 @@ export default class PlayerGetSubcommand extends Subcommand {
 
 		const player = await client.players.from_id(id);
 		const player_embed = {
-			title: `Player ${player.name} (#${player.id})${player.nationality ? ` - ${player.nationality}` : ''}`,
+			title: `Player ${player.name} (#${player.id})${player.nationality ? ` - ${player.nationality.nation}` : ''}`,
 			description: `This submitter is currently ${player.banned ? "" : "not "}banned`
 		};
 
