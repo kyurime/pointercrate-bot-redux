@@ -1,4 +1,6 @@
+import RecordStatus from "pointercrate-js/build/main/lib/endpoints/record/recordstatus";
 import { ApplicationCommandOptionType, Interaction, InteractionResponseType, MessageFlags } from "slash-commands";
+import { get_user, Permissions } from "../../database/user";
 import { shared_client } from "../../pointercrate-link";
 import Subcommand from "../../utils/subcommand";
 
@@ -73,16 +75,46 @@ export default class RecordEditSubcommand extends Subcommand {
 		interaction: Interaction,
 		{ id, status, demon, progress, player, video }:
 			{
-				id: number, status?: string, demon?: string,
-				progress?: string, player?: string, video?: string
+				id: number, status?: RecordStatus, demon?: string,
+				progress?: number, player?: string, video?: string
 			}
 	) {
 		const client = shared_client();
 
+		const user = await get_user(interaction.member.user.id);
+		if (!user) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: "You must be linked to use this command!",
+				}
+			}
+		}
+
+		if (!user.implied_permissions.includes(Permissions.ListHelper)) {
+			return {
+				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+				data: {
+					flags: MessageFlags.EPHEMERAL,
+					content: "You must be list helper to use this command!",
+				}
+			}
+		}
+
+		client.token_login_unsafe(user.token);
+
+		const record = await client.records.from_id(id);
+		await record.edit({
+			status, demon, progress, player, video
+		});
+
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {
-				content: "This command is currently unimplemented!",
+				content: `${record.player.name}'s record on ${record.demon} has been updated!`,
 				flags: MessageFlags.EPHEMERAL,
 			}
 		}

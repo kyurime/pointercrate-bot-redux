@@ -60,6 +60,8 @@ export default class SubmitterListSubcommand extends Subcommand {
 			}
 		});
 
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {

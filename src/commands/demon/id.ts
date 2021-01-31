@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionType } from "slash-commands";
 import Subcommand from "../../utils/subcommand";
+import EditDemonByIDCommand from "./id/edit";
 import GetDemonByIDCommand from "./id/get";
 import ListDemonByIDCommand from "./id/list";
 
@@ -13,7 +14,8 @@ export default class DemonByIDCommand extends Subcommand {
 			},
 			[
 				new GetDemonByIDCommand(),
-				new ListDemonByIDCommand()
+				new ListDemonByIDCommand(),
+				new EditDemonByIDCommand(),
 			],
 			)
 	}

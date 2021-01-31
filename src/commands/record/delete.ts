@@ -55,6 +55,8 @@ export default class RecordDeleteSubcommand extends Subcommand {
 		const record = await client.records.from_id(id);
 		await record.delete();
 
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {

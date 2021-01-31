@@ -48,6 +48,8 @@ export default class SubmitterGetSubcommand extends Subcommand {
 			description: `This submitter is currently ${submitter.banned ? "" : "not "}banned`
 		};
 
+		client.logout();
+
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {

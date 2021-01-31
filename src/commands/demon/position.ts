@@ -2,6 +2,7 @@ import { ApplicationCommandOptionType } from "slash-commands";
 import Subcommand from "../../utils/subcommand";
 import GetDemonByPositionCommand from "./position/get";
 import ListDemonByPositionCommand from "./position/list";
+import EditDemonByPositionCommand from "./position/edit";
 
 export default class DemonByPositionCommand extends Subcommand {
 	constructor() {
@@ -14,6 +15,7 @@ export default class DemonByPositionCommand extends Subcommand {
 			[
 				new GetDemonByPositionCommand(),
 				new ListDemonByPositionCommand(),
+				new EditDemonByPositionCommand(),
 			],
 		)
 	}

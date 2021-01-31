@@ -1,13 +1,13 @@
 import Command from "../utils/command";
-import UserLogoutCommand from "./user/delete";
-import UserInfoCommand from "./user/info";
-import UserLoginCommand from "./user/login";
+import UserLogoutCommand from "./account/delete";
+import UserInfoCommand from "./account/info";
+import UserLoginCommand from "./account/login";
 
 export default class UserGroup extends Command {
 	constructor() {
 		super({
-			name: "user",
-			description: "User related commands."
+			name: "account",
+			description: "Account related commands."
 		},
 			{
 				subcommands: [

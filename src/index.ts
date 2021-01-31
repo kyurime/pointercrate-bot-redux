@@ -107,12 +107,14 @@ async function init_commands() {
   }
 }
 
-async function sync_commands() {
-  await init_commands();
-
+async function remove_global_commands() {
   // get global commands first
   const registered_global_commands = await interaction.getApplicationCommands();
   const global_command_names = COMMANDS.filter((command) => !command.testing).map((command) => command.command.name);
+
+  if (!registered_global_commands) {
+    return;
+  }
 
   // we know that all the local commands are also registered now
   const global_difference = registered_global_commands.filter((command) => !global_command_names.includes(command.name));
@@ -124,8 +126,16 @@ async function sync_commands() {
     await interaction.deleteApplicationCommand(command.id);
   }
 
+  return;
+}
+
+async function remove_test_commands() {
   const registered_test_commands = await interaction.getApplicationCommands(process.env.TEST_GUILD);
   const test_command_names = COMMANDS.filter((command) => command.testing).map((command) => command.command.name);
+
+  if (!registered_test_commands) {
+    return;
+  }
 
   const test_difference = registered_test_commands.filter((command) => !test_command_names.includes(command.name));
 
@@ -134,6 +144,15 @@ async function sync_commands() {
 
     await interaction.deleteApplicationCommand(command.id, process.env.TEST_GUILD);
   }
+
+  return;
+}
+
+async function sync_commands() {
+  await init_commands();
+
+  await remove_global_commands();
+  await remove_test_commands();
 }
 
 sync_commands();
