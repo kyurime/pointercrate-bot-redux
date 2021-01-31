@@ -15,7 +15,7 @@ export default class DemonGroup extends Command {
 				new DemonByPositionCommand(),
 				new AddDemonCommand(),
 			],
-			testing: true,
+			testing: false,
 		}
 		);
 	}

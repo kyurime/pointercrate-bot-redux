@@ -15,7 +15,7 @@ export default class UserGroup extends Command {
 					new UserInfoCommand(),
 					new UserLogoutCommand(),
 				],
-				testing: true,
+				testing: false,
 			}
 		);
 	}

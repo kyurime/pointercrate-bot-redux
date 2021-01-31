@@ -19,7 +19,7 @@ export default class RecordGroup extends Command {
 					new RecordListSubcommand(),
 					new RecordGetSubcommand(),
 				],
-				testing: true,
+				testing: false,
 			}
 		);
 	}

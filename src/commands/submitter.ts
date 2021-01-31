@@ -15,7 +15,7 @@ export default class SubmitterGroup extends Command {
 					new SubmitterGetSubcommand(),
 					new SubmitterListSubcommand(),
 				],
-				testing: true,
+				testing: false,
 			}
 		);
 	}
