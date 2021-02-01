@@ -64,7 +64,7 @@ export default class UserEditCommand extends Subcommand {
 			};
 		}
 
-		client.edit_self({
+		await client.edit_self({
 			display_name,
 			youtube_channel,
 			permissions

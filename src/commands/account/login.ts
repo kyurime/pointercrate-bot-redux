@@ -78,7 +78,7 @@ export default class UserLoginCommand extends Subcommand {
 			}
 		}
 
-		const message = `User \`${client.user?.name}\` edited.`;
+		const message = `Linked with user \`${client.user?.name}\`.`;
 		client.logout();
 
 		return {
