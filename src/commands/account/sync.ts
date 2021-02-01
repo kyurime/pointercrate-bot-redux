@@ -1,57 +1,33 @@
 import { ApplicationCommandOptionType, Interaction, InteractionResponseType, MessageFlags } from 'slash-commands';
-import { create_user, get_user } from '../../database/user';
+import { create_user, delete_user, get_user } from '../../database/user';
 import { shared_client } from '../../pointercrate-link';
 import Subcommand from '../../utils/subcommand';
 
-export default class UserLoginCommand extends Subcommand {
+export default class UserSyncCommand extends Subcommand {
 	constructor() {
 		super({
-			name: "link",
-			description: "Links to pointercrate account with provided token.",
+			name: "sync",
+			description: "Syncs a linked pointercrate account.",
 			type: ApplicationCommandOptionType.SUB_COMMAND,
-			options: [
-				{
-					name: "token",
-					description: "Access token of user",
-					required: true,
-					type: ApplicationCommandOptionType.STRING,
-				}
-			]
 		})
 	}
 
-	async run_command(interaction: Interaction, { token }: { token: string }) {
+	async run_command(interaction: Interaction) {
 		const client = shared_client();
 
 		const user = await get_user(interaction.member.user.id);
-		if (user) {
+		if (!user) {
 			return {
 				type: InteractionResponseType.CHANNEL_MESSAGE,
 				data: {
 					flags: MessageFlags.EPHEMERAL,
-					content: `You are already linked - please unlink first!`,
-				}
-			}
-		}
-
-		// messy token validation thing
-		try {
-			const token_head = JSON.parse(Buffer.from(token.split('.')[0], 'base64').toString('ascii'));
-			if (token_head.typ != 'JWT') {
-				throw new Error("this token parsing error should never be seen");
-			}
-		} catch (e) {
-			return {
-				type: InteractionResponseType.CHANNEL_MESSAGE,
-				data: {
-					flags: MessageFlags.EPHEMERAL,
-					content: "Token is in invalid format.",
+					content: `You must be linked to use this command!`,
 				}
 			}
 		}
 
 		try {
-			await client.token_login(token);
+			await client.token_login(user.token);
 		} catch (e) {
 			if ("message" in e) {
 				return {
@@ -67,7 +43,8 @@ export default class UserLoginCommand extends Subcommand {
 		}
 
 		try {
-			await create_user(interaction.member.user.id, token,client.user?.permissions ?? 0);
+			await delete_user(interaction.member.user.id);
+			await create_user(interaction.member.user.id, client.token!!, client.user?.permissions ?? 0);
 		} catch (e) {
 			return {
 				type: InteractionResponseType.CHANNEL_MESSAGE,
@@ -78,7 +55,7 @@ export default class UserLoginCommand extends Subcommand {
 			}
 		}
 
-		const message = `User \`${client.user?.name}\` edited.`;
+		const message = `Successfully synced with \`${client.user?.name}\`.`;
 		client.logout();
 
 		return {
